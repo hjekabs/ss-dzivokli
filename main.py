@@ -2,6 +2,8 @@ import requests
 import hashlib
 import json
 import sqlite3
+import time
+import schedule
 from bs4 import BeautifulSoup
 
 
@@ -54,7 +56,7 @@ def main_process(base_url):
         price = td[8].text.replace(" €/mēn.", "")
 
 
-        if td[4].text == "2" and int(price) >= 350 and int(price) <= 500:
+        if td[4].text == "2" and int(price) >= 300 and int(price) <= 500:
             potential_apartments.append(td)
 
 
@@ -91,6 +93,7 @@ def main_process(base_url):
         db_records.append(r)
 
     for a in clean_list_aparments:
+        print(a)
         if a not in db_records:
             print("not in db so should save")
             c.execute("insert into apartments values (?)",
@@ -105,8 +108,18 @@ def main_process(base_url):
     conn.close()
 
 
-main_process(url1)
-main_process(url2)
-main_process(url3)
-main_process(url4)
+
+
+def job():
+    main_process(url1)
+    main_process(url2)
+    main_process(url3)
+    main_process(url4)
+
+schedule.every(1).minutes.do(job)
+
+while 1:
+    schedule.run_pending()
+    time.sleep(1)
+
 
