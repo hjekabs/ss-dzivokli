@@ -17,27 +17,25 @@ def telegram_bot_sendtext(bot_message):
     return response.json()
 
 
-url1 = "https://www.ss.lv/lv/real-estate/flats/riga/all/hand_over/filter/"
-url2 = "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page2.html"
-url3 = "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page3.html"
-url4 = "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page4.html"
+
+
+URLS = [
+    "https://www.ss.lv/lv/real-estate/flats/riga/all/hand_over/filter/",
+    "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page2.html",
+    "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page3.html",
+    "https://www.ss.com/lv/real-estate/flats/riga/all/hand_over/filter/page4.html",
+]
+
+
 
 def main_process(base_url):
     res = requests.get(base_url)
-
     ss_html = res.text
-
     soup = BeautifulSoup(ss_html, 'html.parser')
-
     table = soup.find_all("table")
-
     dzivoklu_table = table[1].find_all("table")
-
     final_table = dzivoklu_table[2]
-
     apartments = final_table.find_all("tr")
-
-
     potential_apartments = []
     all_apartments = []
 
@@ -54,7 +52,7 @@ def main_process(base_url):
 
         rooms = td[4].text
         price = td[8].text.replace(" €/mēn.", "")
-
+        price = price.replace(" €/dienā", "")
 
         if td[4].text == "2" and int(price) >= 300 and int(price) <= 500:
             potential_apartments.append(td)
@@ -107,16 +105,14 @@ def main_process(base_url):
 
     conn.close()
 
-
-
-
 def job():
-    main_process(url1)
-    main_process(url2)
-    main_process(url3)
-    main_process(url4)
+    for url in URLS:
+        try:
+            main_process(url)
+        except ValueError as ex:
+            print(ex)
 
-schedule.every(1).minutes.do(job)
+schedule.every(0.1).minutes.do(job)
 
 while 1:
     schedule.run_pending()
