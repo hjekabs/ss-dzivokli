@@ -112,7 +112,7 @@ def job():
         except ValueError as ex:
             print(ex)
 
-schedule.every(0.1).minutes.do(job)
+schedule.every(30).minutes.do(job)
 
 while 1:
     schedule.run_pending()
