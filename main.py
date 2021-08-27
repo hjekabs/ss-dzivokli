@@ -50,16 +50,19 @@ def main_process(base_url):
 
     for td in clean_apartments:
 
-        rooms = td[4].text
-        price = td[8].text.replace(" €/mēn.", "")
-        price = price.replace(" €/dienā", "")
+        if (len(td) >= 8):
+            print(td[4])
+            print(td[8])
 
-        if td[4].text == "2" and int(price) >= 300 and int(price) <= 500:
-            potential_apartments.append(td)
+            price = td[8].text.replace(" €/mēn.", "")
+            price = price.replace(" €/dienā", "")
+
+            if td[4].text == "2" or td[4].text == "3" and int(price) >= 380 and int(price) <= 550:
+                potential_apartments.append(td)
 
 
-    # This is the final clean list
-    clean_list_aparments = []
+        # This is the final clean list
+        clean_list_aparments = []
 
     for apartment in potential_apartments:
 
